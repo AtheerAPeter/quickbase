@@ -1,0 +1,27 @@
+{
+  "name": "create-quickbase",
+  "version": "1.0.4",
+  "main": "setup-script.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "create-quickbase": "setup-script.js"
+  },
+  "keywords": [
+    "hono",
+    "prisma",
+    "postgresql",
+    "backend",
+    "create-script"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "A CLI tool to create a Hono backend with Prisma and PostgreSQL",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.3.0",
+    "yargs": "^17.7.2"
+  }
+}
