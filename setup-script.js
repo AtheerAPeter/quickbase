@@ -138,7 +138,7 @@ const createProjectStructure = async (projectName) => {
   // Create basic files
   fs.writeFileSync(
     ".env",
-    `DATABASE_URL="postgresql://atheer:@localhost:5432/atheer?schema=public"
+    `DATABASE_URL="postgresql://mydb:@localhost:5432/mydb?schema=public"
 JWT_SECRET="SomeRandomString"`
   );
 

@@ -1,6 +1,6 @@
 {
   "name": "create-quickbase",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "setup-script.js",
   "type": "commonjs",
   "scripts": {
