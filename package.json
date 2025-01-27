@@ -9,7 +9,7 @@
   },
   "publishConfig": {
     "ignore": [
-      "orogonal.js"
+      "original.js"
     ]
   },
   "bin": {
