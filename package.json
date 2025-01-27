@@ -17,7 +17,7 @@
     "create-script"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "A CLI tool to create a Hono backend with Prisma and PostgreSQL",
   "dependencies": {
     "chalk": "^4.1.2",
