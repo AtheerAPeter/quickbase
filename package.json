@@ -1,10 +1,16 @@
 {
   "name": "create-quickbase",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "main": "setup-script.js",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepack": "npmignore --auto"
+  },
+  "publishConfig": {
+    "ignore": [
+      "orogonal.js"
+    ]
   },
   "bin": {
     "create-quickbase": "setup-script.js"
