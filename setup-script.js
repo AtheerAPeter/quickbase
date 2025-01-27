@@ -27,6 +27,121 @@ const getProjectName = async () => {
   return name || "awesome-backend";
 };
 
+const packageManagers = ["npm", "yarn", "pnpm", "bun"];
+
+const getPackageManager = () => {
+  return new Promise((resolve) => {
+    let selectedIndex = 0;
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+
+    console.log("Select package manager (use arrow keys):");
+    const render = () => {
+      console.clear();
+      console.log("Select package manager (use arrow keys):");
+      packageManagers.forEach((pm, i) => {
+        console.log(`${i === selectedIndex ? ">" : " "} ${pm}`);
+      });
+    };
+
+    render();
+
+    process.stdin.on("data", (key) => {
+      const byte = key[0];
+
+      if (byte === 3) {
+        process.exit();
+      }
+
+      if (byte === 13) {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        rl.close();
+        resolve(packageManagers[selectedIndex]);
+        return;
+      }
+
+      if (byte === 27 && key[1] === 91) {
+        // Arrow keys
+        if (key[2] === 65) {
+          // Up
+          selectedIndex =
+            selectedIndex > 0 ? selectedIndex - 1 : packageManagers.length - 1;
+        }
+        if (key[2] === 66) {
+          // Down
+          selectedIndex =
+            selectedIndex < packageManagers.length - 1 ? selectedIndex + 1 : 0;
+        }
+        render();
+      }
+    });
+  });
+};
+
+const databaseOptions = ["postgresql", "sqlite"];
+
+const getDatabase = () => {
+  return new Promise((resolve) => {
+    let selectedIndex = 0;
+
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+
+    console.log("Select database (use arrow keys):");
+    const render = () => {
+      console.clear();
+      console.log("Select database (use arrow keys):");
+      databaseOptions.forEach((pm, i) => {
+        console.log(`${i === selectedIndex ? ">" : " "} ${pm}`);
+      });
+    };
+
+    render();
+
+    process.stdin.on("data", (key) => {
+      const byte = key[0];
+
+      if (byte === 3) {
+        process.exit();
+      }
+
+      if (byte === 13) {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        rl.close();
+        resolve(databaseOptions[selectedIndex]);
+        return;
+      }
+
+      if (byte === 27 && key[1] === 91) {
+        // Arrow keys
+        if (key[2] === 65) {
+          // Up
+          selectedIndex =
+            selectedIndex > 0 ? selectedIndex - 1 : databaseOptions.length - 1;
+        }
+        if (key[2] === 66) {
+          // Down
+          selectedIndex =
+            selectedIndex < databaseOptions.length - 1 ? selectedIndex + 1 : 0;
+        }
+        render();
+      }
+    });
+  });
+};
+
 const execCommand = (command, options = {}) => {
   try {
     return execSync(command, { ...options, encoding: "utf8" });
@@ -50,13 +165,15 @@ const getLatestVersion = (packageName) => {
 
 const createProjectStructure = async (projectName) => {
   const projectPath = path.join(process.cwd(), projectName);
+  const packageManager = await getPackageManager();
+  const database = await getDatabase();
 
   // Create project directory
   fs.mkdirSync(projectPath);
   process.chdir(projectPath);
 
   // Initialize package.json
-  execCommand("npm init -y");
+  execCommand(`${packageManager} init -y`);
 
   // Get latest versions of all dependencies
   console.log(chalk.blue("Fetching latest package versions..."));
@@ -103,7 +220,7 @@ const createProjectStructure = async (projectName) => {
 
   // Install dependencies
   console.log(chalk.blue("Installing dependencies..."));
-  execCommand("npm install", { stdio: "inherit" });
+  execCommand(`${packageManager} install`, { stdio: "inherit" });
 
   // Initialize TypeScript
   console.log(chalk.blue("Setting up TypeScript..."));
@@ -138,8 +255,11 @@ const createProjectStructure = async (projectName) => {
   // Create basic files
   fs.writeFileSync(
     ".env",
-    `DATABASE_URL="postgresql://mydb:@localhost:5432/mydb?schema=public"
-JWT_SECRET="SomeRandomString"`
+    database === "postgresql"
+      ? `DATABASE_URL="postgresql://mydb:@localhost:5432/mydb?schema=public"
+      JWT_SECRET="SomeRandomString" `
+      : `DATABASE_URL="file:./dev.db"
+      JWT_SECRET="SomeRandomString"`
   );
 
   fs.writeFileSync(
@@ -158,7 +278,7 @@ dist
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "${database}"
   url      = env("DATABASE_URL")
 }
 
@@ -493,9 +613,9 @@ export const userAuth = async (c: Context, next: Next) => {
   console.log(chalk.green(`\nProject ${projectName} created successfully!`));
   console.log(chalk.blue("\nNext steps:"));
   console.log("1. cd", projectName);
-  console.log("2. npm run prisma:generate");
-  console.log("3. npm run prisma:migrate");
-  console.log("4. npm run dev");
+  console.log(`2. ${packageManager} run prisma:generate`);
+  console.log(`3. ${packageManager} run prisma:migrate`);
+  console.log(`4. ${packageManager} run dev`);
 };
 
 const main = async () => {
